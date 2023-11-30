@@ -1,0 +1,57 @@
+# Build & Tests
+coverage/
+build/
+cmake-build-*/
+bin/
+target/
+out/
+__pycache__
+*.pyc
+*.class
+*.exe
+*.dll
+*.so
+
+# IDE
+.idea/
+.idea_modules/
+*.iml
+*.iws
+*.ipr
+modules.xml
+.vscode/
+.history/
+.settings/
+sheets
+*.vsix
+.ionide
+.project/
+
+# Plugins
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# Logs
+*.log*
+*.tmp
+*.lock
+.DS_Store
+Thumbs.db
+
+# Compressed
+*.zip
+*.tar*
+*.rar
+*.jar
+*.war
+*.ear
+
+# Other
+*.env
+*.swp
+*.sqlite3
+*.sql
+*.pem
