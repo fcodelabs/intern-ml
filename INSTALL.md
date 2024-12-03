@@ -1,3 +1,3 @@
 # Installation guide
 
-Ruff formatter is used by vscode for code formatting. Please install it before using the repo. 
+[Ruff formatter](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff) is used by vscode for code formatting. Please install it before using the repo.
