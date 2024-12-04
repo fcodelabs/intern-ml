@@ -1,3 +1,4 @@
 # Project Readme
 
-This file should provide an overview/summary of the project, its purpose, features, installation, usage, and other relevant information. It should be clear, concise, and engaging to attract and inform potential users and contributors.
+This repo is used for the training purposes of AI interns. Each intern should create a directory with his/her name in the main branch and work inside it.
+
