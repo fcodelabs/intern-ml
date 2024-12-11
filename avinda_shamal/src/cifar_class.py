@@ -21,7 +21,6 @@ class CustomImageDataset(Dataset):
             root_dir : Path to the root directory
             transform : A function to apply to the images (default: None).
             target_transform : A function to apply to the labels (default: None).
-
         Returns: None
         """
         self.root_dir = root_dir
@@ -51,7 +50,6 @@ class CustomImageDataset(Dataset):
 
         Args:
             idx : Index of the sample to retrieve.
-
         Returns:
             A tuple containing the image tensor and its corresponding label.
         """
