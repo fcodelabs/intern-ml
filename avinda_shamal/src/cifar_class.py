@@ -13,10 +13,9 @@ class CustomImageDataset(Dataset):
         self,
         root_dir: os.PathLike,
         transform: Callable | None = None,
-        target_transform=None,
+        target_transform: Callable | None = None,
     ):
-        """
-        Initializes the CustomImageDataset.
+        """Initializes the CustomImageDataset.
 
         Args:
             root_dir : Path to the root directory
@@ -38,11 +37,11 @@ class CustomImageDataset(Dataset):
                     (img_path, class_idx)
                 )  # store image path and class folder
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns the total number of samples in the dataset.
 
         Returns:
-            int: Number of samples in the dataset.
+            Number of samples in the dataset.
         """
 
         return len(self.data)
