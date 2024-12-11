@@ -13,16 +13,14 @@ class CustomImageDataset(Dataset):
         self,
         root_dir: os.PathLike,
         transform: Callable | None = None,
-        target_transform=None,
+        target_transform: Callable | None = None,
     ):
-        """
-        Initializes the CustomImageDataset.
+        """Initializes the CustomImageDataset.
 
         Args:
             root_dir : Path to the root directory
             transform : A function to apply to the images (default: None).
             target_transform : A function to apply to the labels (default: None).
-
         Returns: None
         """
         self.root_dir = root_dir
@@ -38,7 +36,7 @@ class CustomImageDataset(Dataset):
                     (img_path, class_idx)
                 )  # store image path and class folder
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Returns the total number of samples in the dataset.
 
         Returns:
@@ -52,7 +50,6 @@ class CustomImageDataset(Dataset):
 
         Args:
             idx : Index of the sample to retrieve.
-
         Returns:
             A tuple containing the image tensor and its corresponding label.
         """
