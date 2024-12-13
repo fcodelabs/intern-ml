@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from src.cifar_class import CustomImageDataset
+from avinda_shamal.src.dataclasses import CustomImageDataset
 import torch
 import matplotlib.pyplot as plt
 
@@ -50,13 +50,13 @@ for i in range(1, cols * rows + 1):
     figure.add_subplot(rows, cols, i)
     plt.title(labels_map[label])
     plt.axis("off")
-    # plt.imshow(img_)
-# plt.show()
+    plt.imshow(img_)
+plt.show()
 
 ## Another method to display image and label
 train_features, train_labels = next(iter(train_dataloader))
 img = train_features[0].squeeze()
 label = train_labels[0]
-# plt.imshow(img.permute(1, 2, 0))
-# plt.show()
+plt.imshow(img.permute(1, 2, 0))
+plt.show()
 print(f"Label: {labels_map[label.item()]}")
