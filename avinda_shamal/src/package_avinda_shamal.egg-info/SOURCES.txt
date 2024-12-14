@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+avinda_shamal/src/package_avinda_shamal.egg-info/PKG-INFO
+avinda_shamal/src/package_avinda_shamal.egg-info/SOURCES.txt
+avinda_shamal/src/package_avinda_shamal.egg-info/dependency_links.txt
+avinda_shamal/src/package_avinda_shamal.egg-info/top_level.txt
+avinda_shamal/src/package_avinda_shamal/__init__.py
+avinda_shamal/src/package_avinda_shamal/dataclasses.py
+avinda_shamal/src/package_avinda_shamal/huggingface_model.py
+avinda_shamal/src/package_avinda_shamal.egg-info/SOURCES.txt

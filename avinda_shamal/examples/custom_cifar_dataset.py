@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from avinda_shamal.src.dataclasses import CustomImageDataset
+from package_avinda_shamal.dataclasses import CustomImageDataset
 import torch
 import matplotlib.pyplot as plt
 
@@ -9,8 +9,10 @@ import matplotlib.pyplot as plt
 transform = transforms.Compose(
     [
         transforms.Resize((32, 32)),
-        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # Apply standart Normalization and then convert to [-1, 1] range
-        # transforms.ToTensor()  # convert each image to a tensor and normalize to [0, 1] range
+        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        # # Apply standard Normalization and then convert to [-1, 1] range
+        # transforms.ToTensor()
+        # # convert each image to a tensor and normalize to [0, 1] range
         # Means and Standard deviations of R,G,B planes are 0.5
         ### no need to apply ToTensor() as read_image() already converts image to tensor
     ]

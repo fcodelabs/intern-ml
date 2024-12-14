@@ -1,0 +1,27 @@
+Metadata-Version: 2.1
+Name: package_avinda_shamal
+Version: 0.0.1
+Summary: A package containing Custom Image Dataset classes for both raw files and Hugging Face datasets
+Author-email: Avinda Shamal <avindashamal@gmail.com>
+Project-URL: Homepage, https://github.com/pypa/sampleproject
+Project-URL: Issues, https://github.com/pypa/sampleproject/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# Project Readme
+
+This repo is used for the training purposes of AI interns. Each intern should create a directory with his/her name in the main branch and work inside it.
+
+Folder structure
+
+```
+intern-ml/
+|
+├── your_name/
+    |
+    ├──src/
+    ├──test/
+```
