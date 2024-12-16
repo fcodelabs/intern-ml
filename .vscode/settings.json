@@ -10,7 +10,7 @@
       90
     ],
   },
-  "python.testing.cwd": "D:/Projects/intern-ml/avinda_shamal",
+  
   "python.testing.pytestArgs": [
     "test"
   ],
