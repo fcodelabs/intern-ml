@@ -10,7 +10,7 @@ __pycache__
 *.class
 *.exe
 *.dll
-*.egg-info/
+# *.egg-info/
 *.so
 
 # IDE
