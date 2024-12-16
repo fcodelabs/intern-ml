@@ -42,7 +42,6 @@ class CustomImageDataset(Dataset):
         Returns:
             Number of samples in the dataset.
         """
-
         return len(self.data)
 
     def __getitem__(self, idx: int) -> tuple:
@@ -53,7 +52,6 @@ class CustomImageDataset(Dataset):
         Returns:
             A tuple containing the image tensor and its corresponding label.
         """
-
         img_path, label = self.data[idx]
         image = read_image(img_path)
         if self.transform:

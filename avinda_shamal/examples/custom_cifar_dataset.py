@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from src.cifar_class import CustomImageDataset
+from cvas import CustomImageDataset
 import torch
 import matplotlib.pyplot as plt
 
@@ -9,8 +9,10 @@ import matplotlib.pyplot as plt
 transform = transforms.Compose(
     [
         transforms.Resize((32, 32)),
-        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),  # Apply standart Normalization and then convert to [-1, 1] range
-        # transforms.ToTensor()  # convert each image to a tensor and normalize to [0, 1] range
+        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        # # Apply standard Normalization and then convert to [-1, 1] range
+        # transforms.ToTensor()
+        # # convert each image to a tensor and normalize to [0, 1] range
         # Means and Standard deviations of R,G,B planes are 0.5
         ### no need to apply ToTensor() as read_image() already converts image to tensor
     ]
@@ -50,13 +52,13 @@ for i in range(1, cols * rows + 1):
     figure.add_subplot(rows, cols, i)
     plt.title(labels_map[label])
     plt.axis("off")
-    # plt.imshow(img_)
-# plt.show()
+    plt.imshow(img_)
+plt.show()
 
 ## Another method to display image and label
 train_features, train_labels = next(iter(train_dataloader))
 img = train_features[0].squeeze()
 label = train_labels[0]
-# plt.imshow(img.permute(1, 2, 0))
-# plt.show()
+plt.imshow(img.permute(1, 2, 0))
+plt.show()
 print(f"Label: {labels_map[label.item()]}")
