@@ -16,7 +16,7 @@ from cvas.dataclasses import CustomImageDataset
     ],
 )
 def test_len_custom_dataset(datalist, expected):
-    with patch("src.cifar_class.CustomImageDataset.__init__", return_value=None):
+    with patch("cvas.dataclasses.CustomImageDataset.__init__", return_value=None):
         dataset = CustomImageDataset(root_dir="mock_path", transform=None)
         dataset.data = datalist
 
