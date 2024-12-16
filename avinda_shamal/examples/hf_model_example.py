@@ -1,13 +1,13 @@
 from datasets import load_dataset
 from torchvision import transforms
-from package_avinda_shamal.huggingface_dataclass import CustomImageDataset
+from cvas.huggingface_dataclass import HuggingFaceDataset
 
 # load the cifar10 dataset
 hf_dataset = load_dataset("cifar10")
 
-# initialize the CustomImageDataset class
-train_data = CustomImageDataset(hf_dataset, "train", transform=transforms.ToTensor())
-test_data = CustomImageDataset(hf_dataset, "test", transform=transforms.ToTensor())
+# initialize the HuggingFaceDataset class
+train_data = HuggingFaceDataset(hf_dataset, "train", transform=transforms.ToTensor())
+test_data = HuggingFaceDataset(hf_dataset, "test", transform=transforms.ToTensor())
 
 print(len(test_data))
 print(len(train_data))
