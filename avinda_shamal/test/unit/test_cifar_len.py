@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from src.cifar_class import CustomImageDataset
+from cvas.dataclasses import CustomImageDataset
 
 
 @pytest.mark.parametrize(
