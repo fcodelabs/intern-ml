@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from package_avinda_shamal.dataclasses import CustomImageDataset
+from cvas import CustomImageDataset
 import torch
 import matplotlib.pyplot as plt
 
