@@ -40,7 +40,7 @@ class CustomImageDataset(Dataset):
         """Returns the total number of samples in the dataset.
 
         Returns:
-            int: Number of samples in the dataset.
+            Number of samples in the dataset.
         """
         return len(self.data)
 
