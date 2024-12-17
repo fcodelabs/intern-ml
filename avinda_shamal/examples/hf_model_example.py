@@ -1,6 +1,6 @@
 from datasets import load_dataset, load_dataset_builder
 from torchvision import transforms
-from cvas.huggingface_dataclass import HuggingFaceDataset
+from cvas import HuggingFaceDataset
 
 # check the dataset information
 ds_builder = load_dataset_builder("cifar10")
