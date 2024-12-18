@@ -1,37 +1,48 @@
 from cvas.huggingface_dataclass import HuggingFaceDataset
 import pytest
+from datasets import Dataset, DatasetDict
 
 
 @pytest.mark.parametrize(
     "hf_dataset, split, expected",
     [
         (
-            {
-                "train": [
-                    {"img": "image1", "label": "label1"},
-                    {"img": "image2", "label": "label2"},
-                    {"img": "image3", "label": "label3"},
-                    {"img": "image4", "label": "label4"},
-                ],
-                "test": [
-                    {"img": "image5", "label": "label5"},
-                ],
-            },
+            DatasetDict(
+                {
+                    "train": Dataset.from_dict(
+                        {
+                            "img": ["image1", "image2", "image3", "image4"],
+                            "label": ["label1", "label2", "label3", "label4"],
+                        },
+                    ),
+                    "test": Dataset.from_dict(
+                        {
+                            "img": ["image5"],
+                            "label": ["label5"],
+                        },
+                    ),
+                }
+            ),
             "train",
             4,
         ),
         (
-            {
-                "train": [
-                    {"img": "image1", "label": "label1"},
-                    {"img": "image2", "label": "label2"},
-                    {"img": "image3", "label": "label3"},
-                ],
-                "test": [
-                    {"img": "image4", "label": "label4"},
-                    {"img": "image5", "label": "label5"},
-                ],
-            },
+            DatasetDict(
+                {
+                    "train": Dataset.from_dict(
+                        {
+                            "img": ["image1", "image2", "image3"],
+                            "label": ["label1", "label2", "label3"],
+                        },
+                    ),
+                    "test": Dataset.from_dict(
+                        {
+                            "img": ["image4", "image5"],
+                            "label": ["label4", "label5"],
+                        },
+                    ),
+                }
+            ),
             "test",
             2,
         ),

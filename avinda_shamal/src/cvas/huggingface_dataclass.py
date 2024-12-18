@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 from typing import Callable
+from datasets import DatasetDict
 
 
 class HuggingFaceDataset(Dataset):
@@ -9,7 +10,7 @@ class HuggingFaceDataset(Dataset):
 
     def __init__(
         self,
-        hf_dataset,
+        hf_dataset: DatasetDict,
         split: str,
         transform: Callable | None = None,
         target_transform: Callable | None = None,
