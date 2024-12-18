@@ -4,11 +4,7 @@
 name: Python application
 
 on:
-  workflow_dispatch:
-  push:
-    branches: ["*"]
-  pull_request:
-    branches: ["*"]
+  workflow_dispatch
 
 permissions:
   contents: read
