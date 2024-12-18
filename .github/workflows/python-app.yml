@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip install pytest
         # Use pip to install from pyproject.toml
         pip install ./avinda_shamal
 
@@ -53,5 +53,12 @@ jobs:
 
     # Step 7: Run tests with pytest
     - name: Test with pytest
-      run: |
-        pytest
+      run: pytest avinda_shamal/test/unit/ --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+
+    # Step 8: Upload the test results
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: pytest-results-${{ matrix.python-version }}
+        path: junit/test-results-${{ matrix.python-version }}.xml
+      if: ${{ always() }}
