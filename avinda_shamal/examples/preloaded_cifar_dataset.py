@@ -5,18 +5,12 @@ import matplotlib.pyplot as plt
 
 # Load the training data
 training_data = datasets.CIFAR10(
-    root="data",
-    train=True,
-    download=True,
-    transform=ToTensor()
+    root="data", train=True, download=True, transform=ToTensor()
 )
 
 # Load the test data
 test_data = datasets.CIFAR10(
-    root="data",
-    train=False,
-    download=True,
-    transform=ToTensor()
+    root="data", train=False, download=True, transform=ToTensor()
 )
 
 labels_map = {
@@ -41,4 +35,3 @@ for i in range(1, cols * rows + 1):
     plt.axis("off")
     plt.imshow(img.permute(1, 2, 0))
 plt.show()
-    
