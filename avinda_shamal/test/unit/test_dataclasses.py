@@ -1,12 +1,33 @@
-from unittest.mock import patch
-from cvas.dataclasses import CustomImageDataset
+import pytest
 import torch
 from torchvision import transforms
+from unittest.mock import patch
+from cvas.dataclasses import CustomImageDataset
 
-transform = transforms.Resize((32, 32))
+
+@pytest.mark.parametrize(
+    "datalist, expected",
+    [
+        (
+            [("a.jpg", "horse"), ("b.jpg", "frog"), ("c.jpg", "dog"), ("d.jpg", "cat")],
+            4,
+        ),
+        ([("a.jpg", "horse"), ("b.jpg", "frog"), ("c.jpg", "dog")], 3),
+        ([("a.jpg", "horse"), ("b.jpg", "frog")], 2),
+        ([("a.jpg", "horse")], 1),
+    ],
+)
+def test_len_custom_dataset(datalist, expected):
+    with patch("cvas.dataclasses.CustomImageDataset.__init__", return_value=None):
+        dataset = CustomImageDataset(root_dir="mock_path", transform=None)
+        dataset.data = datalist
+
+        # test the len method
+        assert len(dataset) == expected
 
 
 def test_get_item_custom_dataset():
+    transform = transforms.Resize((32, 32))
     # Initialize the dataset and set up mock data
     with patch("cvas.dataclasses.read_image") as mock_read_image:
         mock_read_image.return_value = torch.rand(3, 44, 44)
