@@ -6,9 +6,10 @@ name: Python application
 on:
   workflow_dispatch:
   push:
-    branches: [ "*" ]
+    branches: ["*"]
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -16,7 +17,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     # Step 1: Check out the repository
@@ -36,7 +37,6 @@ jobs:
         pip install pytest
         # Use pip to install from pyproject.toml
         pip install ./avinda_shamal
-
     # Step 4: Install Ruff for linting and formatting
     - name: Install the code linting and formatting tool Ruff
       run: pipx install ruff
@@ -45,7 +45,6 @@ jobs:
     - name: Lint code with Ruff
       run: |
         ruff check . --output-format=github --target-version=py39
-
     # Step 6: Check code formatting with Ruff
     - name: Check code formatting with Ruff
       run: |
@@ -54,12 +53,12 @@ jobs:
 
     # Step 7: Run tests with pytest
     - name: Test with pytest
-      run: pytest avinda_shamal/test/unit/ --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+      run: pytest avinda_shamal/test/unit/ --doctest-modules --junitxml=junit/test-results.xml
 
     # Step 8: Upload the test results
     - name: Upload pytest test results
       uses: actions/upload-artifact@v4
       with:
-        name: pytest-results-${{ matrix.python-version }}
-        path: junit/test-results-${{ matrix.python-version }}.xml
+        name: pytest-results
+        path: junit/test-results.xml
       if: ${{ always() }}
