@@ -5,6 +5,7 @@ cmake-build-*/
 bin/
 target/
 out/
+data/
 __pycache__
 *.pyc
 *.class
