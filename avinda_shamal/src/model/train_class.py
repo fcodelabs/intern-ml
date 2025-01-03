@@ -112,6 +112,12 @@ class ModelTrainer:
                     print(
                         f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
                     )
+                # Check early stopping
+                should_stop, best_loss = self.early_stopping(
+                    epoch_loss, best_loss
+                )
+                if should_stop:
+                    return metrics
         print("Finished Training")
         return self.network, metrics
 
@@ -138,6 +144,32 @@ class ModelTrainer:
                 correct += (predicted == test_labels).sum().item()
             accuracy = correct / total * 100
         return accuracy
+
+    def early_stopping(
+        self,
+        val_loss: float,
+        best_loss: float = float("inf"),
+        patience_counter: int = 0,
+        patience: int = 2,
+    ) -> tuple:
+        """Checks if early stopping should be triggered.
+        Args:
+            val_loss (float): Current epoch's validation loss.
+            best_loss (float): Best validation loss observed so far.
+            patience_counter (int): Current count of epochs without improvement.
+            patience (int): Maximum allowed epochs without improvement.
+        Returns:
+            tuple: where should stop and updated_best_loss
+        """
+        if val_loss < best_loss:
+            best_loss = val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print("Early stopping triggered!")
+                return True, best_loss
+        return False, best_loss
 
     def learning_curves(self, metrics: dict) -> None:
         """Plots the learning curves for the model.
