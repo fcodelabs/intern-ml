@@ -137,14 +137,13 @@ class ModelTrainer:
             accuracy = correct / total * 100
         return accuracy
 
-    def learning_curves(self) -> None:
+    def learning_curves(self, metrics: dict) -> None:
         """Plots the learning curves for the model.
         Args:
             metrics : A dictionary containing the training loss and accuracy.
         Returns:
             None
         """
-        _, metrics = self.train_model()
         plt.figure(figsize=(10, 5))
         plt.plot(metrics["epoch_loss"], label="Training Loss")
         plt.xlabel("Epochs")
