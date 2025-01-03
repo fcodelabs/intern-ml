@@ -1,6 +1,8 @@
 import torch
+import torch.optim.optimizer
 from torch.utils.data import DataLoader
 import torch.nn as nn
+import torch.optim as optim
 
 
 class ModelTrainer:
@@ -25,7 +27,9 @@ class ModelTrainer:
         self.test_loader = test_loader
         self.device = device
 
-    def train_model(self, epochs, criterian, optimizer) -> tuple:
+    def train_model(
+        self, epochs: int, criterian: nn.Module, optimizer: optim.Optimizer
+    ) -> tuple:
         """Trains the model on the training dataset.
         Args:
             epochs : The number of epochs to train the model.
@@ -74,7 +78,7 @@ class ModelTrainer:
                 _, predicted = torch.max(
                     test_outputs, 1
                 )  # choose the class which has highest energy is the predicted class
-                # _ gives the energy value for predicted class
+                # _ gives the energy value for predicted class which is not used here
                 total += test_labels.size(0)
                 correct += (predicted == test_labels).sum().item()
             accuracy = correct / total * 100
