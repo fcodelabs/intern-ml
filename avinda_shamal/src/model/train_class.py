@@ -13,19 +13,16 @@ class ModelTrainer:
         self,
         network: nn.Module,
         train_loader: DataLoader,
-        test_loader: DataLoader,
         device: torch.device,
     ) -> None:
         """Initializes the ModelTrainer.
         Args:
             network : The neural network model to train.
             train_loader : The DataLoader object for the training dataset.
-            test_loader : The DataLoader object for the test dataset.
             device : The device to use for training and testing (cpu or cuda).
         """
         self.network = network
         self.train_loader = train_loader
-        self.test_loader = test_loader
         self.device = device
 
     def train_model(
@@ -112,45 +109,19 @@ class ModelTrainer:
                     print(
                         f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
                     )
-                # Check early stopping
-                should_stop, best_loss = self.early_stopping(
-                    epoch_loss, best_loss
-                )
-                if should_stop:
-                    return metrics
+                    # Check early stopping
+                    should_stop, _ = self.early_stopping(val_loss=epoch_loss)
+                    if should_stop:
+                        return metrics
         print("Finished Training")
         return self.network, metrics
-
-    def test_model(self) -> float:
-        """Tests the model on the test dataset.
-        Returns:
-            float: The accuracy of the model on the test dataset.
-        """
-        self.network.to(self.device)
-        correct, total = 0, 0
-        with torch.no_grad():
-            for test_data in self.test_loader:
-                test_images, test_labels = test_data
-                test_images, test_labels = (
-                    test_images.to(self.device),
-                    test_labels.to(self.device),
-                )
-                test_outputs = self.network(test_images)
-                _, predicted = torch.max(
-                    test_outputs, 1
-                )  # choose the class which has highest energy is the predicted class
-                # _ gives the energy value for predicted class which is not used here
-                total += test_labels.size(0)
-                correct += (predicted == test_labels).sum().item()
-            accuracy = correct / total * 100
-        return accuracy
 
     def early_stopping(
         self,
         val_loss: float,
         best_loss: float = float("inf"),
         patience_counter: int = 0,
-        patience: int = 2,
+        patience: int = 5,
     ) -> tuple:
         """Checks if early stopping should be triggered.
         Args:
@@ -163,7 +134,6 @@ class ModelTrainer:
         """
         if val_loss < best_loss:
             best_loss = val_loss
-            patience_counter = 0
         else:
             patience_counter += 1
             if patience_counter >= patience:
