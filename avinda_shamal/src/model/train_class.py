@@ -102,16 +102,18 @@ class ModelTrainer:
                 if phase == "train":
                     metrics["train_loss"].append(epoch_loss)
                     metrics["train_accuracy"].append(epoch_accuracy)
+                    print(
+                        f"Epoch [{epoch + 1}/{epochs}], "
+                        f"Train Loss: {metrics['train_loss'][-1]:.4f}, Train Accuracy: {metrics['train_accuracy'][-1]:.2f}%"
+                    )
                 else:
                     metrics["eval_loss"].append(epoch_loss)
                     metrics["eval_accuracy"].append(epoch_accuracy)
-                print(
-                    f"Epoch [{epoch + 1}/{epochs}], "
-                    f"Train Loss: {metrics['train_loss'][-1]:.4f}, Train Accuracy: {metrics['train_accuracy'][-1]:.2f}%, "
-                    f"Val Loss: {metrics['val_loss'][-1]:.4f}, Val Accuracy: {metrics['val_accuracy'][-1]:.2f}%"
-                )
-            print("Finished Training")
-            return self.network, metrics
+                    print(
+                        f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
+                    )
+        print("Finished Training")
+        return self.network, metrics
 
     def test_model(self) -> float:
         """Tests the model on the test dataset.
@@ -145,7 +147,8 @@ class ModelTrainer:
             None
         """
         plt.figure(figsize=(10, 5))
-        plt.plot(metrics["epoch_loss"], label="Training Loss")
+        plt.plot(metrics["train_loss"], label="Training Loss")
+        plt.plot(metrics["eval_loss"], label="Validation Loss")
         plt.xlabel("Epochs")
         plt.ylabel("Loss")
         plt.title("Training Loss")
@@ -153,7 +156,8 @@ class ModelTrainer:
         plt.show()
 
         plt.figure(figsize=(10, 5))
-        plt.plot(metrics["epoch_accuracy"], label="Training Accuracy")
+        plt.plot(metrics["train_accuracy"], label="Training Accuracy")
+        plt.plot(metrics["eval_accuracy"], label="Validation Accuracy")
         plt.xlabel("Epochs")
         plt.ylabel("Accuracy")
         plt.title("Training Accuracy")
