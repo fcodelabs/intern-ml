@@ -10,8 +10,11 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_auc_score,
     roc_curve,
+    auc,
 )
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import label_binarize
+import numpy as np
 
 
 class ModelEvaluator:
@@ -53,7 +56,6 @@ class ModelEvaluator:
                 self.y_probs.extend(
                     probabilities.numpy()
                 )  # Append probabilities
-
         metrics["Accuracy"] = accuracy_score(self.y_true, self.y_pred)
         metrics["precision"] = precision_score(
             self.y_true, self.y_pred, average="weighted"
@@ -69,25 +71,80 @@ class ModelEvaluator:
         )
         # AUC
         if self.y_probs is not None:
-            metrics["roc_auc"] = roc_auc_score(
+            metrics["auc_score"] = roc_auc_score(
                 self.y_true, self.y_probs, multi_class="ovr"
             )
+            metrics["roc_auc"] = self.roc_auc()["micro"]
         # Print the metrics
         for key, value in metrics.items():
             if key == "confusion_matrix":
                 print(f"{key}:\n{value}")
             else:
                 print(f"{key}: {value:.4f}")
-
-        # Plot ROC Curve
-        if self.y_probs is not None:
-            fpr, tpr, _ = roc_curve(self.y_true, self.y_probs)
-            plt.figure(figsize=(8, 6))
-            plt.plot(fpr, tpr, label="ROC Curve")
-            plt.xlabel("False Positive Rate")
-            plt.ylabel("True Positive Rate (Recall)")
-            plt.title("Receiver Operating Characteristic (ROC) Curve")
-            plt.legend()
-            plt.show()
-
         return metrics
+
+    def roc_auc(self):
+        """
+        calculate the auc score and Plots the ROC curve for the model per class.
+        """
+        # Binarize the true labels
+        n_classes = 10
+        classes = (
+            "plane",
+            "car",
+            "bird",
+            "cat",
+            "deer",
+            "dog",
+            "frog",
+            "horse",
+            "ship",
+            "truck",
+        )
+        y_true_bin = label_binarize(self.y_true, classes=range(n_classes))
+        # Initialize dictionaries to store results
+        fpr = {}
+        tpr = {}
+        roc_auc = {}
+        # Compute ROC and AUC for each class
+        for i in range(n_classes):
+            y_probs_array = np.array(self.y_probs)
+            fpr[i], tpr[i], _ = roc_curve(
+                y_true_bin[:, i], y_probs_array[:, i]
+            )
+            roc_auc[i] = auc(fpr[i], tpr[i])
+
+        # Compute micro-average ROC curve and AUC
+        fpr["micro"], tpr["micro"], _ = roc_curve(
+            y_true_bin.ravel(), y_probs_array.ravel()
+        )
+        roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+        if self.y_probs is not None:
+            plt.figure(figsize=(10, 8))
+            # Plot ROC curve for each class
+            for i in range(n_classes):
+                plt.plot(
+                    fpr[i],
+                    tpr[i],
+                    label=f"{classes[i]} (AUC = {roc_auc[i]:.2f})",
+                )
+            # Plot micro-average ROC curve
+            plt.plot(
+                fpr["micro"],
+                tpr["micro"],
+                label=f'Micro-average (AUC = {roc_auc["micro"]:.2f})',
+                color="navy",
+                linestyle="--",
+            )
+            # Add labels, legend, and title
+            plt.xlabel("False Positive Rate")
+            plt.ylabel("True Positive Rate")
+            plt.title("ROC Curve for Multiclass Classification (CIFAR-10)")
+            plt.legend(loc="lower right")
+            plt.grid()
+            plt.show()
+        else:
+            print(
+                "ROC curve can only be plotted if probabilities are available."
+            )
+        return roc_auc

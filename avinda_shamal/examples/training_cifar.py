@@ -45,7 +45,7 @@ trainer = ModelTrainer(model, train_loader, device)
 
 # train the model
 model, train_metrics = trainer.train_model(
-    epochs=2, criterian=criterian, optimizer=optimizer
+    epochs=15, criterian=criterian, optimizer=optimizer
 )
 # plot the learning curves
 trainer.learning_curves(train_metrics)
