@@ -14,16 +14,21 @@ class ModelTrainer:
         network: nn.Module,
         train_loader: DataLoader,
         device: torch.device,
+        patience: int = 5,
     ) -> None:
         """Initializes the ModelTrainer.
         Args:
             network : The neural network model to train.
             train_loader : The DataLoader object for the training dataset.
             device : The device to use for training and testing (cpu or cuda).
+            patience : The number of epochs to wait for early stopping.
         """
         self.network = network
         self.train_loader = train_loader
         self.device = device
+        self.best_loss: float = float("inf")
+        self.patience_counter: int = 0
+        self.patience = patience
 
     def train_model(
         self,
@@ -110,36 +115,30 @@ class ModelTrainer:
                         f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
                     )
                     # Check early stopping
-                    should_stop, _ = self.early_stopping(val_loss=epoch_loss)
+                    should_stop = self.early_stopping(val_loss=epoch_loss)
                     if should_stop:
-                        return metrics
+                        return self.network, metrics
         print("Finished Training")
         return self.network, metrics
 
     def early_stopping(
         self,
         val_loss: float,
-        best_loss: float = float("inf"),
-        patience_counter: int = 0,
-        patience: int = 5,
-    ) -> tuple:
+    ) -> bool:
         """Checks if early stopping should be triggered.
         Args:
             val_loss (float): Current epoch's validation loss.
-            best_loss (float): Best validation loss observed so far.
-            patience_counter (int): Current count of epochs without improvement.
-            patience (int): Maximum allowed epochs without improvement.
         Returns:
             tuple: where should stop and updated_best_loss
         """
-        if val_loss < best_loss:
-            best_loss = val_loss
+        if val_loss < self.best_loss:
+            self.best_loss = val_loss
         else:
-            patience_counter += 1
-            if patience_counter >= patience:
+            self.patience_counter += 1
+            if self.patience_counter >= self.patience:
                 print("Early stopping triggered!")
-                return True, best_loss
-        return False, best_loss
+                return True
+        return False
 
     def learning_curves(self, metrics: dict) -> None:
         """Plots the learning curves for the model.

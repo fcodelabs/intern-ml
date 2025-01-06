@@ -20,6 +20,7 @@ __pycache__
 *.iml
 *.iws
 *.ipr
+*.pth
 modules.xml
 .history/
 .settings/
