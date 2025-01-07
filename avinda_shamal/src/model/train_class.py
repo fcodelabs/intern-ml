@@ -65,7 +65,7 @@ class ModelTrainer:
                 f"Epoch [{epoch + 1}/{epochs}], "
                 f"Train Loss: {metrics['train_loss'][-1]:.4f}, Train Accuracy: {metrics['train_accuracy'][-1]:.2f}%"
             )
-            # Run evaluation phase
+            # Run validation phase
             eval_loss, eval_accuracy = self.run_epoch(
                 "eval", criterian, optimizer, val_set
             )
@@ -83,6 +83,8 @@ class ModelTrainer:
 
     def split_dataset(self, split: float) -> tuple:
         """Splits the dataset into training and validation sets.
+        Args:
+            split : The percentage of the training data to use for validation.
         Returns:
             tuple: The training and validation DataLoader objects.
         """
