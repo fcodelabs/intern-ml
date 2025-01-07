@@ -59,7 +59,7 @@ class ModelEvaluator:
                 )  # Append probabilities
         metrics["Accuracy"] = accuracy_score(self.y_true, self.y_pred)
         metrics["precision"] = precision_score(
-            self.y_true, self.y_pred, average="weighted"
+            self.y_true, self.y_pred, average="weighted", zero_division=0
         )
         metrics["recall"] = recall_score(
             self.y_true, self.y_pred, average="weighted"
