@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+import torchvision.datasets as datasets
 import torch.nn.functional as F
 from sklearn.metrics import (
     accuracy_score,
@@ -88,19 +89,8 @@ class ModelEvaluator:
         calculate the auc score and Plots the ROC curve for the model per class.
         """
         # Binarize the true labels
-        n_classes = 10
-        classes = (
-            "plane",
-            "car",
-            "bird",
-            "cat",
-            "deer",
-            "dog",
-            "frog",
-            "horse",
-            "ship",
-            "truck",
-        )
+        classes = datasets.CIFAR10(root="./data", train=False).classes
+        n_classes = len(classes)
         y_true_bin = label_binarize(self.y_true, classes=range(n_classes))
         # Initialize dictionaries to store results
         fpr = {}

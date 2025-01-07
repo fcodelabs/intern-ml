@@ -14,7 +14,7 @@ class ModelTrainer:
         network: nn.Module,
         train_loader: DataLoader,
         device: torch.device,
-        patience: int = 5,
+        patience: int = 3,
     ) -> None:
         """Initializes the ModelTrainer.
         Args:
@@ -53,6 +53,39 @@ class ModelTrainer:
             "eval_loss": [],
             "eval_accuracy": [],
         }
+        train_set, val_set = self.split_dataset(split)
+        for epoch in range(epochs):  # loop over the dataset multiple times
+            # Run training phase
+            train_loss, train_accuracy = self.run_epoch(
+                "train", criterian, optimizer, train_set
+            )
+            metrics["train_loss"].append(train_loss)
+            metrics["train_accuracy"].append(train_accuracy)
+            print(
+                f"Epoch [{epoch + 1}/{epochs}], "
+                f"Train Loss: {metrics['train_loss'][-1]:.4f}, Train Accuracy: {metrics['train_accuracy'][-1]:.2f}%"
+            )
+            # Run evaluation phase
+            eval_loss, eval_accuracy = self.run_epoch(
+                "eval", criterian, optimizer, val_set
+            )
+            metrics["eval_loss"].append(eval_loss)
+            metrics["eval_accuracy"].append(eval_accuracy)
+            print(
+                f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
+            )
+            # Check early stopping
+            should_stop = self.early_stopping(val_loss=eval_loss)
+            if should_stop:
+                return self.network, metrics
+        print("Finished Training")
+        return self.network, metrics
+
+    def split_dataset(self, split: float) -> tuple:
+        """Splits the dataset into training and validation sets.
+        Returns:
+            tuple: The training and validation DataLoader objects.
+        """
         train_size = int(len(self.train_loader.dataset) * split)
         val_size = len(self.train_loader.dataset) - train_size
         train_data, val_data = random_split(
@@ -64,62 +97,50 @@ class ModelTrainer:
         val_set = DataLoader(
             val_data, batch_size=self.train_loader.batch_size, shuffle=False
         )
-        for epoch in range(epochs):  # loop over the dataset multiple times
-            for phase in ["train", "eval"]:
-                if phase == "train":
-                    self.network.train()
-                    loader = train_set
-                else:
-                    self.network.eval()
-                    loader = val_set
-                running_loss = 0.0
-                correct, total = 0, 0
+        return train_set, val_set
 
-                for (
-                    data
-                ) in loader:  # each iteration, loader yields a batch of data
-                    inputs, labels = data
-                    inputs, labels = (
-                        inputs.to(self.device),
-                        labels.to(self.device),
-                    )
-                    # zero the parameter gradients
-                    optimizer.zero_grad()
-                    with torch.set_grad_enabled(phase == "train"):
-                        outputs = self.network(inputs)  # forward pass
-                        loss = criterian(outputs, labels)  # calculate the loss
-                        if phase == "train":
-                            loss.backward()  # backward pass
-                            optimizer.step()  # update the weights
-                    running_loss += loss.item() * inputs.size(
-                        0
-                    )  # Accumulate loss
-                    _, predicted = torch.max(outputs, 1)
-                    total += labels.size(0)
-                    correct += (
-                        (predicted == labels).sum().item()
-                    )  # count correct predictions
-                epoch_loss = running_loss / len(loader.dataset)
-                epoch_accuracy = correct / total * 100
+    def run_epoch(
+        self,
+        phase: str,
+        criterian: nn.Module,
+        optimizer: optim.Optimizer,
+        loader: DataLoader,
+    ) -> tuple:
+        """Runs a single epoch of training or evaluation.
+        Args:
+            phase : The phase of the epoch (train or eval).
+            criterian : The loss function to use.
+            optimizer : The optimizer to use for training.
+            loader : The DataLoader object for the dataset.
+        Returns:
+            tuple: The loss and accuracy for the epoch.
+        """
+        if phase == "train":
+            self.network.train()
+        else:
+            self.network.eval()
+        running_loss = 0.0
+        correct, total = 0, 0
+        for data in loader:
+            inputs, labels = data
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            # zero the parameter gradients
+            optimizer.zero_grad()
+            with torch.set_grad_enabled(phase == "train"):
+                outputs = self.network(inputs)  # forward pass
+                loss = criterian(outputs, labels)  # calculate the loss
                 if phase == "train":
-                    metrics["train_loss"].append(epoch_loss)
-                    metrics["train_accuracy"].append(epoch_accuracy)
-                    print(
-                        f"Epoch [{epoch + 1}/{epochs}], "
-                        f"Train Loss: {metrics['train_loss'][-1]:.4f}, Train Accuracy: {metrics['train_accuracy'][-1]:.2f}%"
-                    )
-                else:
-                    metrics["eval_loss"].append(epoch_loss)
-                    metrics["eval_accuracy"].append(epoch_accuracy)
-                    print(
-                        f"Val Loss: {metrics['eval_loss'][-1]:.4f}, Val Accuracy: {metrics['eval_accuracy'][-1]:.2f}%"
-                    )
-                    # Check early stopping
-                    should_stop = self.early_stopping(val_loss=epoch_loss)
-                    if should_stop:
-                        return self.network, metrics
-        print("Finished Training")
-        return self.network, metrics
+                    loss.backward()  # backward pass
+                    optimizer.step()  # update the weights
+            running_loss += loss.item() * inputs.size(0)  # Accumulate loss
+            _, predicted = torch.max(outputs, 1)
+            total += labels.size(0)
+            correct += (
+                (predicted == labels).sum().item()
+            )  # count correct predictions
+        epoch_loss = running_loss / len(loader.dataset)
+        epoch_accuracy = correct / total * 100
+        return epoch_loss, epoch_accuracy
 
     def early_stopping(
         self,
@@ -133,6 +154,7 @@ class ModelTrainer:
         """
         if val_loss < self.best_loss:
             self.best_loss = val_loss
+            self.patience_counter = 0
         else:
             self.patience_counter += 1
             if self.patience_counter >= self.patience:
@@ -140,7 +162,7 @@ class ModelTrainer:
                 return True
         return False
 
-    def learning_curves(self, metrics: dict) -> None:
+    def plot_learning_curves(self, metrics: dict) -> None:
         """Plots the learning curves for the model.
         Args:
             metrics : A dictionary containing the training loss and accuracy.
