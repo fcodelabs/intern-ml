@@ -1,41 +1,100 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class NNModel(nn.Module):
-    def __init__(self, in_fetures: int, out_features: int):
+    def __init__(self, in_features: int, out_features: int):
         """Initializes the neural network model
 
         Args: in_fetures, out_features
         Returns: None
         """
         super(NNModel, self).__init__()
-        self.conv1 = nn.Conv2d(
-            in_channels=in_fetures, out_channels=8, kernel_size=3, stride=1
+        # First block
+        self.block1 = nn.Sequential(
+            nn.Conv2d(
+                in_channels=in_features,
+                out_channels=32,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
-        self.conv2 = nn.Conv2d(
-            in_channels=8, out_channels=16, kernel_size=3, stride=1
+        # Second block
+        self.block2 = nn.Sequential(
+            nn.Conv2d(
+                in_channels=32,
+                out_channels=64,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=64,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
-
-        self.fc1 = nn.Linear(in_features=6 * 6 * 16, out_features=128)
-        self.fc2 = nn.Linear(in_features=128, out_features=64)
-        self.fc3 = nn.Linear(in_features=64, out_features=out_features)
-        self.softmax = nn.Softmax(dim=1)
+        # Third block
+        self.block3 = nn.Sequential(
+            nn.Conv2d(
+                in_channels=64,
+                out_channels=128,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=128,
+                out_channels=128,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(128),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+        # Fully connected layers
+        self.fc = nn.Sequential(
+            nn.Linear(128 * 4 * 4, 256),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(256, out_features),
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass of the model
+        """Forward pass of the upgraded model.
 
-        Args: input tensor
-        Returns: output tensor
+        Args:
+            x (torch.Tensor): Input tensor.
+        Returns:
+            torch.Tensor: Output tensor.
         """
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2)
-        x = x.view(-1, 6 * 6 * 16)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        x = self.softmax(x)
+        x = self.block1(x)
+        x = self.block2(x)
+        x = self.block3(x)
+        x = x.view(x.size(0), -1)  # Flatten
+        x = self.fc(x)
         return x
