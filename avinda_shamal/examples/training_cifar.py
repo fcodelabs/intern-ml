@@ -7,6 +7,7 @@ import torch.optim as optim
 import numpy as np
 from model import NNModel
 from model import ModelTrainer
+from model import ModelEvaluator
 
 # load and normalize the Cifar10 dataset
 std = np.array([0.5, 0.5, 0.5])
@@ -23,42 +24,33 @@ test_set = datasets.CIFAR10(
     root="./data", train=False, download=True, transform=transform
 )
 test_loader = DataLoader(test_set, batch_size=8, shuffle=True, num_workers=0)
-classes = (
-    "plane",
-    "car",
-    "bird",
-    "cat",
-    "deer",
-    "dog",
-    "frog",
-    "horse",
-    "ship",
-    "truck",
-)
+classes = train_set.classes
 # define the model, device, loss function, and optimizer
-model = NNModel(3, 10)
+model = NNModel(3, len(classes))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 criterian = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-trainer = ModelTrainer(model, train_loader, test_loader, device)
+trainer = ModelTrainer(model, train_loader, device)
+save_path = input("Enter the path to save the model: ")
 
 # train the model
 model, train_metrics = trainer.train_model(
-    epochs=15, criterian=criterian, optimizer=optimizer
+    epochs=30, criterian=criterian, optimizer=optimizer
 )
+# plot the learning curves
+trainer.plot_learning_curves(train_metrics)
 
 # test the model
-score = trainer.test_model()
-print(f"Accuracy of the network on the 10000 test images: {score:.2f} %")
+tester = ModelEvaluator(model, test_loader)
+test_metrics = tester.test_model()
 
 # save the trained model
-path = "./src/model/cifar10_net.pth"
 torch.save(
     {
         "Trained_Model": model.state_dict(),
         "Epoch_Losses": train_metrics,
-        "Test_Accuracy": score,
+        "Test_Accuracy": test_metrics,
     },
-    path,
+    save_path,
 )
-print(f"Model and metrics saved to {path}")
+print(f"Model and metrics saved to {save_path}")
