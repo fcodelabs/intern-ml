@@ -93,5 +93,9 @@ dataset = DatasetDict(
 
 # save the dataset locally
 dataset.save_to_disk("ocr_dataset")
+print("Dataset Created Successfully")
+
+# push to the hub
 loaded_dataset = load_from_disk("ocr_dataset")
+loaded_dataset.push_to_hub(repo_id="AvindaShamal/WildReceipt-OCR")
 print(loaded_dataset)
